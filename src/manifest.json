@@ -1,0 +1,32 @@
+{
+	"manifest_version": 3,
+	"name": "weibo一键下载",
+	"version": "1.0",
+	"description": "一键下载微博视频/图片",
+	"homepage_url": "https://github.com/vacabun",
+	"author": "vacabun",
+	"icons":
+	{
+			"16": "icon.png",
+			"48": "icon.png",
+			"128": "icon.png"
+	},
+	"background": {
+		"service_worker": "background.js"
+	},
+	"content_scripts": [
+		{
+			"js": [
+				"content_script.js"
+			],
+			"matches": [
+				"https://weibo.com/*",
+				"https://s.weibo.com/*"
+			],
+			"run_at": "document_start"
+		}
+	],
+	"permissions": [
+		"downloads"
+	]
+}
