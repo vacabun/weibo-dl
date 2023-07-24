@@ -113,9 +113,9 @@ function httpGet(theUrl) {
 
 function addDlBtn(footer) {
     let dlBtnDiv = document.createElement('div');
-    dlBtnDiv.className = 'woo-box-item-flex toolbar_item_1ky_D';
+    dlBtnDiv.className = 'woo-box-item-flex toolbar_item_1ky_D toolbar_cursor_34j5V';
     let divInDiv = document.createElement('div');
-    divInDiv.className = 'woo-box-flex woo-box-alignCenter woo-box-justifyCenter toolbar_likebox_1rLfZ';
+    divInDiv.className = 'woo-box-flex woo-box-alignCenter woo-box-justifyCenter toolbar_wrap_np6Ug';
     let dlBtn = document.createElement('button');
     dlBtn.className = 'woo-like-main toolbar_btn_Cg9tz download-button';
     dlBtn.setAttribute('tabindex', '0');
@@ -123,7 +123,7 @@ function addDlBtn(footer) {
     dlBtn.innerHTML = '<span class="woo-like-count">下载</span>';
     dlBtn.addEventListener('click', async function (event) {
         event.preventDefault();
-        const article = this.parentElement.parentElement.parentElement.parentElement.parentElement;
+        const article = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
         if (article.tagName.toLowerCase() == 'article') {
             const header = article.getElementsByTagName('header')[0];
             const postLink = header.getElementsByClassName('head-info_time_6sFQg')[0];
@@ -173,7 +173,7 @@ function addDlBtn(footer) {
     });
     divInDiv.appendChild(dlBtn);
     dlBtnDiv.appendChild(divInDiv);
-    footer.firstChild.appendChild(dlBtnDiv);
+    footer.firstChild.firstChild.firstChild.appendChild(dlBtnDiv);
 }
 
 function sAddDlBtn(footer) {
