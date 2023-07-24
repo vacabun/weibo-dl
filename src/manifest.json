@@ -21,7 +21,6 @@
 			],
 			"matches": [
 				"https://weibo.com/*"
-				// "https://s.weibo.com/*"
 			],
 			"run_at": "document_start"
 		}
