@@ -21,7 +21,27 @@ function downloadImage(imageUrl, name) {
 }
 function downloadWrapper(url, name, type) {
     if (type == 'video') {
-        chrome.runtime.sendMessage({ type: "download_video", url: url, name: name }, function (response) {
+        fetch(url).then(function(response) {
+            if (response.ok) {
+            return response.blob();
+            } else {
+            throw new Error('HTTP status code: ' + response.status);
+            }
+        })
+        .then(function(blob) {
+            // 创建下载链接
+            var downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(blob);
+            downloadLink.download = name; // 下载文件的名称
+
+            // 触发点击事件以下载文件
+            downloadLink.click();
+
+            // 清理资源
+            URL.revokeObjectURL(downloadLink.href);
+        })
+        .catch(function(error) {
+            console.error(error);
         });
     }
     if (type == 'pic') {
@@ -307,7 +327,7 @@ function bodyMouseOver(event) {
 var dlFileName = '{original}.{ext}';
 
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('我被执行了！');
+    // console.log('我被执行了！');
     document.body.addEventListener('mouseover', bodyMouseOver);
 });
 
