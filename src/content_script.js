@@ -21,28 +21,28 @@ function downloadImage(imageUrl, name) {
 }
 function downloadWrapper(url, name, type) {
     if (type == 'video') {
-        fetch(url).then(function(response) {
+        fetch(url).then(function (response) {
             if (response.ok) {
-            return response.blob();
+                return response.blob();
             } else {
-            throw new Error('HTTP status code: ' + response.status);
+                throw new Error('HTTP status code: ' + response.status);
             }
         })
-        .then(function(blob) {
-            // 创建下载链接
-            var downloadLink = document.createElement('a');
-            downloadLink.href = URL.createObjectURL(blob);
-            downloadLink.download = name; // 下载文件的名称
+            .then(function (blob) {
+                // 创建下载链接
+                var downloadLink = document.createElement('a');
+                downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = name; // 下载文件的名称
 
-            // 触发点击事件以下载文件
-            downloadLink.click();
+                // 触发点击事件以下载文件
+                downloadLink.click();
 
-            // 清理资源
-            URL.revokeObjectURL(downloadLink.href);
-        })
-        .catch(function(error) {
-            console.error(error);
-        });
+                // 清理资源
+                URL.revokeObjectURL(downloadLink.href);
+            })
+            .catch(function (error) {
+                console.error(error);
+            });
     }
     if (type == 'pic') {
         downloadImage(url, name);
@@ -148,7 +148,13 @@ function addDlBtn(footer) {
             const header = article.getElementsByTagName('header')[0];
             const postLink = header.getElementsByClassName('head-info_time_6sFQg')[0];
             let postId = postLink.href.split('/')[postLink.href.split('/').length - 1];
-            const response = httpGet('https://weibo.com/ajax/statuses/show?id=' + postId);
+            var response;
+            if (location.host == 'www.weibo.com') {
+                response = httpGet('https://www.weibo.com/ajax/statuses/show?id=' + postId);
+            }
+            else {
+                response = httpGet('https://weibo.com/ajax/statuses/show?id=' + postId);
+            }
             const resJson = JSON.parse(response);
             let status = resJson;
             if (resJson.hasOwnProperty('retweeted_status')) {
@@ -217,7 +223,13 @@ function sAddDlBtn(footer) {
         const cardWrap = card.parentElement;
         const mid = cardWrap.getAttribute('mid');
         if (mid) {
-            const response = httpGet('https://weibo.com/ajax/statuses/show?id=' + mid);
+            var response;
+            if (location.host == 'www.weibo.com') {
+                response = httpGet('https://www.weibo.com/ajax/statuses/show?id=' + mid);
+            }
+            else {
+                response = httpGet('https://weibo.com/ajax/statuses/show?id=' + mid);
+            }
             const resJson = JSON.parse(response);
             // console.log(resJson);
             let status = resJson;
@@ -270,7 +282,7 @@ function sAddDlBtn(footer) {
     // console.log('added download button');
 }
 function bodyMouseOver(event) {
-    if (location.host == 'weibo.com') {
+    if (location.host == 'weibo.com' || location.host == 'www.weibo.com') {
         const footers = document.getElementsByTagName('footer');
         for (const footer of footers) {
             if (footer.getElementsByClassName('download-button').length > 0) {

@@ -20,7 +20,8 @@
 				"content_script.js"
 			],
 			"matches": [
-				"https://weibo.com/*"
+				"https://weibo.com/*",
+                "https://www.weibo.com/*"
 			],
 			"run_at": "document_start"
 		}
