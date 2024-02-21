@@ -1,8 +1,30 @@
+// 唯一ID
+var overlayId = crypto.randomUUID();
+
+/**
+ * 显示加载框
+ */
+function showLoading() {
+    var overlay = document.getElementById(overlayId)
+    overlay.style.display = 'flex';
+}
+
+/**
+ * 隐藏加载框
+ */
+function hideLoading() {
+    var overlay = document.getElementById(overlayId)
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
 function downloadImage(imageUrl, name) {
+    this.showLoading();
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
-            var blob = new Blob([xhr.response], { type: 'image/jpeg' });
+            var blob = new Blob([xhr.response], {type: 'image/jpeg'});
             var url = window.URL.createObjectURL(blob);
             var a = document.createElement('a');
             a.href = url;
@@ -12,15 +34,26 @@ function downloadImage(imageUrl, name) {
             setTimeout(function () {
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
+                this.hideLoading();
             }, 0);
         }
+    };
+    // 处理请求被中止的回调
+    xhr.onabort = function () {
+        this.hideLoading();
+    };
+    // 处理请求发生错误的回调
+    xhr.onerror = function () {
+        this.hideLoading();
     };
     xhr.open('GET', imageUrl);
     xhr.responseType = 'arraybuffer';
     xhr.send();
 }
+
 function downloadWrapper(url, name, type) {
     if (type == 'video') {
+        this.showLoading();
         fetch(url).then(function (response) {
             if (response.ok) {
                 return response.blob();
@@ -34,6 +67,7 @@ function downloadWrapper(url, name, type) {
                 downloadLink.href = URL.createObjectURL(blob);
                 downloadLink.download = name; // 下载文件的名称
 
+                this.hideLoading();
                 // 触发点击事件以下载文件
                 downloadLink.click();
 
@@ -92,7 +126,7 @@ function handleVideo(mediaInfo, padLength, userName, userId, postId, postUid, in
     let originalName = vidName.split('.')[0];
     let ext = vidName.split('.')[1];
     const setName = getName(dlFileName, originalName, ext, userName, userId, postId, postUid, index.toString().padStart(padLength, '0'), postTime, text);
-    newList.push({ url: largeVidUrl, name: setName, type: 'video' });
+    newList.push({url: largeVidUrl, name: setName, type: 'video'});
     if (mediaInfo.hasOwnProperty('pic_info')) {
         let picUrl = mediaInfo.pic_info.pic_big.url;
         let largePicUrl = picUrl.replace('/orj480/', '/large/');
@@ -100,10 +134,11 @@ function handleVideo(mediaInfo, padLength, userName, userId, postId, postUid, in
         let originalName = picName.split('.')[0];
         let ext = picName.split('.')[1];
         const setName = getName(dlFileName, originalName, ext, userName, userId, postId, postUid, index.toString().padStart(padLength, '0'), postTime, text);
-        newList.push({ url: largePicUrl, name: setName, type: 'pic' });
+        newList.push({url: largePicUrl, name: setName, type: 'pic'});
     }
     return newList;
 }
+
 function handlePic(pic, padLength, userName, userId, postId, postUid, index, postTime, text) {
     let newList = [];
     let largePicUrl = pic.largest.url;
@@ -111,7 +146,7 @@ function handlePic(pic, padLength, userName, userId, postId, postUid, index, pos
     let originalName = picName.split('.')[0];
     let ext = picName.split('.')[1];
     const setName = getName(dlFileName, originalName, ext, userName, userId, postId, postUid, index.toString().padStart(padLength, '0'), postTime, text);
-    newList.push({ url: largePicUrl, name: setName, headerFlag: true, type: 'pic' });
+    newList.push({url: largePicUrl, name: setName, headerFlag: true, type: 'pic'});
     if (pic.hasOwnProperty('video')) {
         let videoUrl = pic.video;
         let videoName = videoUrl.split('%2F')[videoUrl.split('%2F').length - 1].split('?')[0];
@@ -120,10 +155,11 @@ function handlePic(pic, padLength, userName, userId, postId, postUid, index, pos
         let originalName = videoName.split('.')[0];
         let ext = videoName.split('.')[1];
         const setName = getName(dlFileName, originalName, ext, userName, userId, postId, postUid, index.toString().padStart(padLength, '0'), postTime, text);
-        newList.push({ url: videoUrl, name: setName, type: 'video' });
+        newList.push({url: videoUrl, name: setName, type: 'video'});
     }
     return newList;
 }
+
 function httpGet(theUrl) {
     let xmlHttp = new XMLHttpRequest();
     xmlHttp.open("GET", theUrl, false); // false for synchronous request
@@ -151,8 +187,7 @@ function addDlBtn(footer) {
             var response;
             if (location.host == 'www.weibo.com') {
                 response = httpGet('https://www.weibo.com/ajax/statuses/show?id=' + postId);
-            }
-            else {
+            } else {
                 response = httpGet('https://weibo.com/ajax/statuses/show?id=' + postId);
             }
             const resJson = JSON.parse(response);
@@ -216,7 +251,9 @@ function sAddDlBtn(footer) {
     let dlBtn = document.createElement('button');
     dlBtn.className = 'woo-like-main toolbar_btn download-button';
     dlBtn.innerHTML = '<span class="woo-like-count">下载</span>';
-    aInLi.addEventListener('click', function (event) { event.preventDefault(); });
+    aInLi.addEventListener('click', function (event) {
+        event.preventDefault();
+    });
     dlBtn.addEventListener('click', function (event) {
         event.preventDefault();
         const card = this.parentElement.parentElement.parentElement.parentElement;
@@ -226,8 +263,7 @@ function sAddDlBtn(footer) {
             var response;
             if (location.host == 'www.weibo.com') {
                 response = httpGet('https://www.weibo.com/ajax/statuses/show?id=' + mid);
-            }
-            else {
+            } else {
                 response = httpGet('https://weibo.com/ajax/statuses/show?id=' + mid);
             }
             const resJson = JSON.parse(response);
@@ -281,6 +317,7 @@ function sAddDlBtn(footer) {
     footer.firstChild.appendChild(dlBtnLi);
     // console.log('added download button');
 }
+
 function bodyMouseOver(event) {
     if (location.host == 'weibo.com' || location.host == 'www.weibo.com') {
         const footers = document.getElementsByTagName('footer');
@@ -336,9 +373,65 @@ function bodyMouseOver(event) {
         }
     }
 }
+
 var dlFileName = '{original}.{ext}';
 
 document.addEventListener('DOMContentLoaded', function () {
+    // 创建遮罩层
+    var overlay = document.createElement('div');
+    overlay.style.display = 'none';
+    // 设置 overlay 的 id
+    overlay.setAttribute('id', overlayId);
+    overlay.classList.add('overlay-' + overlayId);
+    // 创建加载框
+    var loadingBox = document.createElement('div');
+    loadingBox.classList.add('loadingBox-' + overlayId);
+    // 创建加载动画元素
+    var loadingAnimation = document.createElement('div');
+    loadingAnimation.classList.add('loading-animation-' + overlayId);
+    // 将加载动画元素添加到加载框
+    loadingBox.appendChild(loadingAnimation);
+    // 将加载框添加到遮罩层
+    overlay.appendChild(loadingBox);
+    // 将遮罩层添加到 body
+    document.body.appendChild(overlay);
+    // 添加样式
+    var style = document.createElement('style');
+    style.textContent = `
+    .overlay-${overlayId} {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    }
+    
+    .loadingBox-${overlayId} {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .loading-animation-${overlayId} {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #fff;
+        border-radius: 50%;
+        border-top: 5px solid #3498db;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+  `;
+    document.head.appendChild(style);
+
     // console.log('我被执行了！');
     document.body.addEventListener('mouseover', bodyMouseOver);
 });
