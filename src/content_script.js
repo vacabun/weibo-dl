@@ -169,9 +169,14 @@ function httpGet(theUrl) {
 
 function addDlBtn(footer) {
     let dlBtnDiv = document.createElement('div');
-    dlBtnDiv.className = 'woo-box-item-flex toolbar_item_1ky_D toolbar_cursor_34j5V';
     let divInDiv = document.createElement('div');
-    divInDiv.className = 'woo-box-flex woo-box-alignCenter woo-box-justifyCenter toolbar_wrap_np6Ug';
+    if (footer.getElementsByClassName('_item_198pe_23').length > 0 ) {
+        dlBtnDiv.className = 'woo-box-item-flex toolbar_item_1ky_D _item_198pe_23 _cursor_198pe_184';
+        divInDiv.className = 'woo-box-flex woo-box-alignCenter woo-box-justifyCenter _likebox_198pe_50 _wrap_198pe_137 _likebox_198pe_50 _wrap_198pe_137';
+    } else {
+        dlBtnDiv.className = 'woo-box-item-flex toolbar_item_1ky_D toolbar_cursor_34j5V';
+        divInDiv.className = 'woo-box-flex woo-box-alignCenter woo-box-justifyCenter toolbar_wrap_np6Ug';
+    }
     let dlBtn = document.createElement('button');
     dlBtn.className = 'woo-like-main toolbar_btn_Cg9tz download-button';
     dlBtn.setAttribute('tabindex', '0');
@@ -182,7 +187,12 @@ function addDlBtn(footer) {
         const article = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
         if (article.tagName.toLowerCase() == 'article') {
             const header = article.getElementsByTagName('header')[0];
-            const postLink = header.getElementsByClassName('head-info_time_6sFQg')[0];
+            postLink = header.getElementsByClassName('_time_1tpft_33')[0];
+            if (header.getElementsByClassName('_time_1tpft_33').length > 0 ) {
+                postLink = header.getElementsByClassName('_time_1tpft_33')[0];
+            } else {
+                postLink = header.getElementsByClassName('head-info_time_6sFQg')[0];
+            }
             let postId = postLink.href.split('/')[postLink.href.split('/').length - 1];
             var response;
             if (location.host == 'www.weibo.com') {
@@ -234,7 +244,7 @@ function addDlBtn(footer) {
     });
     divInDiv.appendChild(dlBtn);
     dlBtnDiv.appendChild(divInDiv);
-    footer.firstChild.firstChild.firstChild.appendChild(dlBtnDiv);
+    footer.firstElementChild.firstElementChild.firstElementChild.appendChild(dlBtnDiv);
 }
 
 function sAddDlBtn(footer) {
@@ -331,7 +341,7 @@ function bodyMouseOver(event) {
                     if (imgs.length > 0) {
                         let addFlag = false;
                         for (const img of imgs) {
-                            if (['woo-picture-img', 'picture_focusImg_1z5In', 'picture-viewer_pic_37YQ3'].includes(img.className)) {
+                            if (['woo-picture-img', 'picture_focusImg_1z5In', 'picture-viewer_pic_37YQ3', '_focusImg_a2k8z_23'].includes(img.className)) {
                                 addFlag = true;
                             }
                         }
