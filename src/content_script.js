@@ -292,7 +292,6 @@ function addDlBtn(footer) {
                     }
                 }
             }
-            console.log('downloadList=',downloadList)
             handleDownloadList(downloadList, dlBtn);
         }
     });
@@ -332,7 +331,6 @@ function sAddDlBtn(footer) {
                 response = httpGet('https://weibo.com/ajax/statuses/show?id=' + mid);
             }
             const resJson = JSON.parse(response);
-            // console.log(resJson);
             let status = resJson;
             if (resJson.hasOwnProperty('retweeted_status')) {
                 status = resJson.retweeted_status;
@@ -347,14 +345,12 @@ function sAddDlBtn(footer) {
             const text = status.text_raw;
             let downloadList = [];
             if (footer.parentElement.getElementsByTagName('video').length > 0) {
-                // console.log('download video');
                 if (resJson.hasOwnProperty('page_info')) {
                     downloadList = downloadList.concat(handleVideo(resJson.page_info.media_info, 1, userName,
                         userId, postId, postUid, 1, postTime, text, downloadFileName));
                 }
             }
             if (picInfos) {
-                // console.log('download images');
                 let index = 0;
                 let padLength = Object.entries(picInfos).length.toString().length;
                 let countNum = Object.keys(picInfos).length;
@@ -365,7 +361,6 @@ function sAddDlBtn(footer) {
                 }
             }
             if (mixMediaInfo && mixMediaInfo.items) {
-                // console.log('mix media');
                 let index = 0;
                 let padLength = Object.entries(mixMediaInfo.items).length.toString().length;
                 let countNum = Object.keys(mixMediaInfo.items).length;
@@ -387,7 +382,6 @@ function sAddDlBtn(footer) {
     aInLi.appendChild(dlBtn);
     dlBtnLi.appendChild(dlBtn);
     footer.firstChild.appendChild(dlBtnLi);
-    // console.log('added download button');
 }
 
 function bodyMouseOver(event) {
@@ -470,6 +464,5 @@ document.addEventListener('DOMContentLoaded', function() {
   `;
     document.head.appendChild(style);
 
-    // console.log('我被执行了！');
     document.body.addEventListener('mouseover', bodyMouseOver);
 });
