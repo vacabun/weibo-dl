@@ -120,7 +120,8 @@ function getName(nameSetting, originalName, ext, userName, userId, postId, postU
     setName = setName.replace('{HH}', HH);
     setName = setName.replace('{mm}', mm);
     setName = setName.replace('{ss}', ss);
-    setName = setName.replace(/[<|>|*|"|\/|\|:|?|\n]/g, '_');
+    // Replace problematic filename characters; avoid ESLint escaped issues in this pattern
+    setName = setName.replace(/[<>*"|:?\n]/g, '_');
     setName = setName.replace(' \u200B\u200B\u200B', ''); // 空格后带三个零宽空格
     setName = setName.replace(/\u200B/g, ''); // 替换零宽空格，单独处理
     setName = setName.replace(' ', ''); // 最后替换全部空格
@@ -136,7 +137,7 @@ function handleVideo(mediaInfo, padLength, userName, userId, postId, postUid, in
     let ext = vidName.split('.')[1];
     const setName = getName(dlFileName, originalName, ext, userName, userId, postId, postUid, index.toString().padStart(padLength, '0'), postTime, text);
     newList.push({url: largeVidUrl, name: setName, type: 'video'});
-    if (mediaInfo.hasOwnProperty('pic_info')) {
+    if (mediaInfo && Object.prototype.hasOwnProperty.call(mediaInfo, 'pic_info')) {
         let picUrl = mediaInfo.pic_info.pic_big.url;
         let largePicUrl = picUrl.replace('/orj480/', '/large/');
         let picName = largePicUrl.split('/')[largePicUrl.split('/').length - 1].split('?')[0];
@@ -156,7 +157,7 @@ function handlePic(pic, padLength, userName, userId, postId, postUid, index, pos
     let ext = picName.split('.')[1];
     const setName = getName(dlFileName, originalName, ext, userName, userId, postId, postUid, index.toString().padStart(padLength, '0'), postTime, text);
     newList.push({url: largePicUrl, name: setName, headerFlag: true, type: 'pic'});
-    if (pic.hasOwnProperty('video')) {
+    if (pic && Object.prototype.hasOwnProperty.call(pic, 'video')) {
         let videoUrl = pic.video;
         let videoName = videoUrl.split('%2F')[videoUrl.split('%2F').length - 1].split('?')[0];
         videoName = videoName.split('/')[videoName.split('/').length - 1].split('?')[0];
@@ -196,7 +197,7 @@ function addDlBtn(footer) {
         const article = this.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement;
         if (article.tagName.toLowerCase() == 'article') {
             const header = article.getElementsByTagName('header')[0];
-            postLink = header.getElementsByClassName('_time_1tpft_33')[0];
+            let postLink = header.getElementsByClassName('_time_1tpft_33')[0];
             if (header.getElementsByClassName('_time_1tpft_33').length > 0 ) {
                 postLink = header.getElementsByClassName('_time_1tpft_33')[0];
             } else {
@@ -211,7 +212,7 @@ function addDlBtn(footer) {
             }
             const resJson = JSON.parse(response);
             let status = resJson;
-            if (resJson.hasOwnProperty('retweeted_status')) {
+            if (resJson && Object.prototype.hasOwnProperty.call(resJson, 'retweeted_status')) {
                 status = resJson.retweeted_status;
             }
             postId = status.mblogid;
@@ -224,14 +225,14 @@ function addDlBtn(footer) {
             const text = status.text_raw;
             let downloadList = [];
             if (footer.parentElement.getElementsByTagName('video').length > 0) {
-                if (resJson.hasOwnProperty('page_info')) {
+                if (resJson && Object.prototype.hasOwnProperty.call(resJson, 'page_info')) {
                     downloadList = downloadList.concat(handleVideo(resJson.page_info.media_info, 1, userName, userId, postId, postUid, 1, postTime, text));
                 }
             }
             if (picInfos) {
                 let index = 0;
                 let padLength = Object.entries(picInfos).length.toString().length;
-                for (const [id, pic] of Object.entries(picInfos)) {
+                for (const [, pic] of Object.entries(picInfos)) {
                     index += 1;
                     downloadList = downloadList.concat(handlePic(pic, padLength, userName, userId, postId, postUid, index, postTime, text));
                 }
@@ -239,7 +240,7 @@ function addDlBtn(footer) {
             if (mixMediaInfo && mixMediaInfo.items) {
                 let index = 0;
                 let padLength = Object.entries(mixMediaInfo.items).length.toString().length;
-                for (const [id, media] of Object.entries(mixMediaInfo.items)) {
+                for (const [, media] of Object.entries(mixMediaInfo.items)) {
                     index += 1;
                     if (media.type === 'video') {
                         downloadList = downloadList.concat(handleVideo(media.data.media_info, 1, userName, userId, postId, postUid, index, postTime, text));
@@ -278,7 +279,7 @@ function sAddDlBtn(footer) {
         const card = this.parentElement.parentElement.parentElement.parentElement;
         const cardWrap = card.parentElement;
         const mid = cardWrap.getAttribute('mid');
-        if (mid) {
+            if (mid) {
             var response;
             if (location.host == 'www.weibo.com') {
                 response = httpGet('https://www.weibo.com/ajax/statuses/show?id=' + mid);
@@ -288,7 +289,7 @@ function sAddDlBtn(footer) {
             const resJson = JSON.parse(response);
             // console.log(resJson);
             let status = resJson;
-            if (resJson.hasOwnProperty('retweeted_status')) {
+            if (resJson && Object.prototype.hasOwnProperty.call(resJson, 'retweeted_status')) {
                 status = resJson.retweeted_status;
             }
             const postId = status.mblogid;
@@ -302,15 +303,15 @@ function sAddDlBtn(footer) {
             let downloadList = [];
             if (footer.parentElement.getElementsByTagName('video').length > 0) {
                 // console.log('download video');
-                if (resJson.hasOwnProperty('page_info')) {
-                    downloadList = downloadList.concat(handleVideo(resJson.page_info.media_info, 1, userName, userId, postId, postUid, 1, postTime, text));
-                }
+            if (resJson && Object.prototype.hasOwnProperty.call(resJson, 'page_info')) {
+                downloadList = downloadList.concat(handleVideo(resJson.page_info.media_info, 1, userName, userId, postId, postUid, 1, postTime, text));
+            }
             }
             if (picInfos) {
                 // console.log('download images');
                 let index = 0;
                 let padLength = Object.entries(picInfos).length.toString().length;
-                for (const [id, pic] of Object.entries(picInfos)) {
+                for (const [, pic] of Object.entries(picInfos)) {
                     index += 1;
                     downloadList = downloadList.concat(handlePic(pic, padLength, userName, userId, postId, postUid, index, postTime, text));
                 }
@@ -319,7 +320,7 @@ function sAddDlBtn(footer) {
                 // console.log('mix media');
                 let index = 0;
                 let padLength = Object.entries(mixMediaInfo.items).length.toString().length;
-                for (const [id, media] of Object.entries(mixMediaInfo.items)) {
+                for (const [, media] of Object.entries(mixMediaInfo.items)) {
                     index += 1;
                     if (media.type === 'video') {
                         downloadList = downloadList.concat(handleVideo(media.data.media_info, 1, userName, userId, postId, postUid, index, postTime, text));
@@ -337,12 +338,11 @@ function sAddDlBtn(footer) {
     // console.log('added download button');
 }
 
-function bodyMouseOver(event) {
+function bodyMouseOver() {
     if (location.host == 'weibo.com' || location.host == 'www.weibo.com') {
         const footers = document.getElementsByTagName('footer');
         for (const footer of footers) {
-            if (footer.getElementsByClassName('download-button').length > 0) {
-            } else {
+            if (footer.getElementsByClassName('download-button').length === 0) {
                 if (footer.parentElement.tagName.toLowerCase() == 'article') {
                     const article = footer.parentElement;
                     const imgs = article.getElementsByTagName('img');
@@ -370,8 +370,7 @@ function bodyMouseOver(event) {
     if (location.host == 's.weibo.com') {
         const footers = document.querySelectorAll('#pl_feedlist_index .card-act');
         for (const footer of footers) {
-            if (footer.getElementsByClassName('download-button').length > 0) {
-            } else {
+            if (footer.getElementsByClassName('download-button').length === 0) {
                 if (footer.parentElement.className == 'card' && footer.parentElement.parentElement.className == 'card-wrap') {
                     const card = footer.parentElement;
                     let added = false;
