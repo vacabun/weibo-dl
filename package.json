@@ -1,0 +1,17 @@
+{
+  "name": "weibo-dl",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Chrome extension to download Weibo media",
+  "scripts": {
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix",
+    "format": "prettier --write \"src/**/*.{js,css}\""
+  },
+  "devDependencies": {
+    "eslint": "^8.50.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "^2.8.8"
+  }
+}

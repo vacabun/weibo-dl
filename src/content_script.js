@@ -1,5 +1,5 @@
 // 唯一ID
-var overlayId = crypto.randomUUID();
+const overlayId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : ('weibo-overlay-' + Math.random().toString(36).slice(2));
 
 /**
  * 显示加载框
@@ -20,7 +20,7 @@ function hideLoading() {
 }
 
 function downloadImage(imageUrl, name) {
-    this.showLoading();
+    showLoading();
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
@@ -34,17 +34,17 @@ function downloadImage(imageUrl, name) {
             setTimeout(function () {
                 document.body.removeChild(a);
                 window.URL.revokeObjectURL(url);
-                this.hideLoading();
+                hideLoading();
             }, 0);
         }
     };
     // 处理请求被中止的回调
     xhr.onabort = function () {
-        this.hideLoading();
+        hideLoading();
     };
     // 处理请求发生错误的回调
     xhr.onerror = function () {
-        this.hideLoading();
+        hideLoading();
     };
     xhr.open('GET', imageUrl);
     xhr.responseType = 'arraybuffer';
@@ -53,7 +53,7 @@ function downloadImage(imageUrl, name) {
 
 function downloadWrapper(url, name, type) {
     if (type == 'video') {
-        this.showLoading();
+        showLoading();
         fetch(url).then(function (response) {
             if (response.ok) {
                 return response.blob();
@@ -67,7 +67,7 @@ function downloadWrapper(url, name, type) {
                 downloadLink.href = URL.createObjectURL(blob);
                 downloadLink.download = name; // 下载文件的名称
 
-                this.hideLoading();
+                hideLoading();
                 // 触发点击事件以下载文件
                 downloadLink.click();
 
@@ -454,4 +454,3 @@ document.addEventListener('DOMContentLoaded', function () {
     // console.log('我被执行了！');
     document.body.addEventListener('mouseover', bodyMouseOver);
 });
-
