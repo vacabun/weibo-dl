@@ -84,8 +84,13 @@ function downloadWrapper(url, name, type) {
 }
 
 function handleDownloadList(downloadList) {
+    let index = 0;
     for (const item of downloadList) {
-        downloadWrapper(item.url, item.name, item.type);
+        index += 1;
+        // 增加每个文件下载时间间隔，突破浏览器短时间内最多只能下载10个文件的限制。
+        setTimeout(function () {
+            downloadWrapper(item.url, item.name, item.type);
+        }, 150 * index);
     }
 }
 
@@ -115,7 +120,11 @@ function getName(nameSetting, originalName, ext, userName, userId, postId, postU
     setName = setName.replace('{HH}', HH);
     setName = setName.replace('{mm}', mm);
     setName = setName.replace('{ss}', ss);
-    return setName.replace(/[<|>|*|"|\/|\|:|?|\n]/g, '_');
+    setName = setName.replace(/[<|>|*|"|\/|\|:|?|\n]/g, '_');
+    setName = setName.replace(' \u200B\u200B\u200B', ''); // 空格后带三个零宽空格
+    setName = setName.replace(/\u200B/g, ''); // 替换零宽空格，单独处理
+    setName = setName.replace(' ', ''); // 最后替换全部空格
+    return setName;
 }
 
 function handleVideo(mediaInfo, padLength, userName, userId, postId, postUid, index, postTime, text) {
@@ -341,7 +350,7 @@ function bodyMouseOver(event) {
                     if (imgs.length > 0) {
                         let addFlag = false;
                         for (const img of imgs) {
-                            if (['woo-picture-img', 'picture_focusImg_1z5In', 'picture-viewer_pic_37YQ3', '_focusImg_a2k8z_23'].includes(img.className)) {
+                            if (['woo-picture-img', 'picture_focusImg_1z5In', 'picture-viewer_pic_37YQ3', '_focusImg_a2k8z_23', '_focusImg_a3hty_23'].includes(img.className)) {
                                 addFlag = true;
                             }
                         }
@@ -384,7 +393,7 @@ function bodyMouseOver(event) {
     }
 }
 
-var dlFileName = '{original}.{ext}';
+var dlFileName = '{username}-{YYYY}{MM}{DD}_{HH}{mm}{ss}-{index}-{content}-{original}.{ext}';
 
 document.addEventListener('DOMContentLoaded', function () {
     // 创建遮罩层
